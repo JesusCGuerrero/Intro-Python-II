@@ -9,11 +9,12 @@ class Room:
         self.w_to = w_to
         self.items = items
 
+    def __str__(self):
+        return (f"\nRoom Name: {self.name}\nDescription: {self.description}\n")
+
     def addItem(self, item):
+        self.items = [*self.items]
         self.items.append(item)
 
     def removeItem(self, item):
         self.items.remove(item)
-
-    def __str__(self):
-        return (f"\nRoom Name: {self.name}\nDescription: {self.description}\n")

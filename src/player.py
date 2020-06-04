@@ -4,11 +4,14 @@ class Player:
         self.current_room = current_room
         self.items = items
 
-    def pickUpItem(self, item):
+    def takeItem(self, item):
         self.items.append(item)
+        print(f"\n    You take the ({item.name}).\n")
+        print(f"Description:\n{item.description}\n")
 
     def dropItem(self, item):
         self.items.remove(item)
+        print(f"\n    You drop the ({item.name}).\n")
 
     def __str__(self):
-        return (f"\nCurrent Room: {self.current_room.name}\nRoom Description: {self.current_room.description}\n")
+        return (f"\n    Current Room: {self.current_room.name}\n    Room Description: {self.current_room.description}\n")

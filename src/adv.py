@@ -2,148 +2,205 @@ from room import Room
 from player import Player
 from item import Item
 import sys
+import time
 
-
-# Declare all the rooms
-
+# Declare Rooms:
 room = {
     'outside':  Room("Outside Cave Entrance",
                      "North of you, the cave mount beckons"),
 
-    'foyer':    Room("Foyer", """The sound of muffled rain and thunder trails from the south.\nDusty passages run north and east."""),
+    'foyer':    Room("Foyer", """The sound of muffled rain and thunder trails from the south.
+Dusty passages run north and east."""),
 
-    'overlook': Room("Grand Overlook", """A steep cliff appears before you, falling
-into the darkness. Ahead to the north, a light flickers in
-the distance, but there is no way across the chasm."""),
+    'overlook': Room("Grand Overlook", """A steep cliff appears before you, falling into the darkness.
+Ahead to the north, a light flickers in the distance, but there is no way across the chasm."""),
 
-    'narrow':   Room("Narrow Passage", """The narrow passage bends here from west
-to north. A putrid smell permeates the tight corridor. You hear a faint scratching sound further ahead."""),
+    'narrow':   Room("Narrow Passage", """The narrow passage bends here from westto north.
+A putrid smell permeates the tight corridor.
+You hear a faint scratching sound further ahead."""),
 
-    'treasure': Room("Treasure Chamber", """You stumble into the den of a tall lanky eldritch creature. It quickly grabs hold of you with it's fingers, each one matching the length of your arms. As it draws you closer, everything fades to black."""),
-}
+    'den': Room("Strange Den", """You stumble into the den of a tall lanky eldritch creature.
+It quickly grabs hold of you with it's fingers, each one matching the length of your arms.
+As it draws you closer, everything fades to black."""),
+    }
 
-
-# Link rooms together
-
+# Link Rooms Together
 room['outside'].n_to = room['foyer']
 room['foyer'].s_to = room['outside']
 room['foyer'].n_to = room['overlook']
 room['foyer'].e_to = room['narrow']
 room['overlook'].s_to = room['foyer']
 room['narrow'].w_to = room['foyer']
-room['narrow'].n_to = room['treasure']
-room['treasure'].s_to = room['narrow']
+room['narrow'].n_to = room['den']
+room['den'].s_to = room['narrow']
 
-#
-# Main
-#
-
-# Make a new player object that is currently in the 'outside' room.
-
+# Declare Player:
 player = Player(
     current_room = room["outside"],
-    name = "Bruno Mars"
+    name = "Austen Allred"
 )
 
-# Items:
+# Declare Items:
 item = {
-    'lighter': Item("Lighter", "It still has some fluid left. Better than nothing I guess."),
-    'survival_knife': Item("Survival Knife", "It will keel."),
-    'note1': Item("Bloody Note", "\nA note covered in blood. It doesn't seem that old.\n \n'I don't think it followed me into the cave.\nI ran for what seemed like forever.\nNow to find my way back out.'\n"),
-    'note2': Item("Torn Note", "\nA half torn note.\n \n'I don't have much time. It                ~\nand grab the key, then                     ~\nonly way out of the cave.                  ~'\n"),
-    'note3': Item("Soggy Note", "\nA soggy note.\n \n'It can't see you in the dark.\nBut then you can't see it either can you?\nGood luck.'\n"),
-    'ancient_key': Item("Ancient Key", "An otherworldly key. I wonder what it's for."),
+    'lighter': Item("lighter", "It still has some fluid left. Better than nothing I guess.", 1),
+    'survival_knife': Item("survival knife", "\nIt will keel.", 2),
+    'note1': Item("bloody note", "\nA note covered in blood. It doesn't seem that old.\n \n    'I don't think it followed me into the cave.\n    I ran for what seemed like forever.\n    Now to find my way back out.'", 3),
+    'note2': Item("torn note", "\nA half torn note.\n\n    'I didn't escape it, I ran straight into its home.\n    If it finds me again, I can try using my survival knife.\n    Let's hope it doesn't come to that.\n    If anyone finds this letter tell my wife and kids that I love them. My name is...'\n\n The rest of the letter is missing.", 4),
+    'note3': Item("soggy note", "\nA soggy note.\n \n    'It's back there, eating something.\n    I'm going to try and make my way out of the cave and hope it doesn't see me.\n    If it does, I'll bet my life on this knife. Wish me luck.'", 5),
 }
 
 # Add Items to Rooms:
-
-room['outside'].addItem(item['note2'])
+room['outside'].addItem(item['survival_knife'])
 room['foyer'].addItem(item['lighter'])
-room['overlook'].addItem(item['lighter'])
+room['foyer'].addItem(item['note1'])
+room['overlook'].addItem(item['note2'])
+room['narrow'].addItem(item['note3'])
 
-# print(item['note2'])
-# print(player)
+# Game Loop:
+def game_loop():
 
-# Write a loop that:
-#
-# * Prints the current room name
-# * Prints the current description (the textwrap module might be useful here).
-# * Waits for user input and decides what to do.
-#
-# If the user enters a cardinal direction, attempt to move to the room there.
-# Print an error message if the movement isn't allowed.
-#
-# If the user enters "q", quit the game.
+    # Start The Game:
+    game_running = True
+    # Intro Text:
+    print(f"\nYour name is {player.name}...\n")
+    print("The sky thunders as it begins to pour.\nYou see an eerie cave entrance straight ahead of you.\nTo view your controls, enter 'C'.\n")
+    # Create Input Variable:
+    player_input = ""
 
-# player_input = input("The sky thunders as it begins to pour. You see an eerie cave entrance to the north. Use the WASD keys to move.")
+    while game_running == True:
 
-# if player_input == "r":
-#     print(player)
-#     input("You pull out a map")
+        # Quit Function:
+        if player_input.lower() == "q":
+            print("\nThank you for playing!")
+            quit()
 
-# while player.current_room == room["outside"]:
+        # Boss Room Function:
+        if player.current_room.name == "Strange Den":
+            if item["survival_knife"] in player.items:
+                print("You wake just as the creature is about to take a bite of your abdomen.\nYou take the knife you found earlier and thrust it into the side of its long narrow neck.\nYou quickly make your way back out of the cave as the beast wails in agony.\n\nCongratulations, you win!")
+                game_running = False
+                break
+            else:
+                print(f"G     O")
+                time.sleep(.4)
+                print(f"A     V")
+                time.sleep(.4)
+                print(f"M     E")
+                time.sleep(.4)
+                print(f"E     R\n")
+                time.sleep(.4)
+                print(f"Y     A")
+                time.sleep(.4)
+                print(f"O     R")
+                time.sleep(.4)
+                print(f"U     E\n")
+                time.sleep(.4)
+                print(f"D E A D")
+                time.sleep(.4)
+                print(f"! ! ! !")
+                game_running = False
+                break
 
-#     if player_input == "w":
-#         player.current_room = room["foyer"]
-#         print("You climb through the mouth of the cave, collecting several aged cobwebs on your drenched clothes. ")
-
-#     elif player_input == "a":
-#         print("There is nothing of interest to your left. It begins to rain harder.")
-    
-#     elif player_input == "s":
-#         print("There is nothing of interest behind you. It begins to rain harder.")
-    
-#     elif player_input == "d":
-#         print("There is nothing of interest to your right. It begins to rain harder.")
-
-# if player_input == "q":
-#     sys.exit()
-print(player.name)
-print("\nThe sky thunders as it begins to pour.\nYou see an eerie cave entrance straight ahead of you.\nTo view your controls, enter 'C'.\n")
-player_input = []
-
-while not player_input == "q":
-    player_input =  str(input("What will you do?: "))
-
-
-
-    if player_input == 'c':
-        print("\nControls:\n'W' = Up\n'A' = Left\n'S' = Down\n'D' = Right\n'Q' = Quit.\n'R' = Check Current Room\n")
-    
-    elif player_input == 'r':
-        print(f"\n{player}\n")
-
-    elif player_input == 'w':
-        if player.current_room.n_to != []:
-            player.current_room = player.current_room.n_to
-            print(f"\nYou enter the {player.current_room.name}.\n{player.current_room.description}\n")
-            if player.current_room.items != []:
-                print(f"\nYou find a {player.current_room.items[0].name}\n")
+        # Take Item Function:
+        if player.current_room.items != []:
+            for i in player.current_room.items:
+                if player_input.lower() == f"take {i.name}":
+                    player.takeItem(i)
+                    player.current_room.removeItem(i)
         else:
-            print("\n There's nothing of interest in that direction.\n")
+            if "take" in player_input.lower(): 
+                print("There is nothing to take.")
 
-    elif player_input == 'a':
-        if player.current_room.w_to != []:
-            player.current_room = player.current_room.w_to
-            print(f"\nYou enter the {player.current_room.name}.\n{player.current_room.description}\n")
+        # Drop Item Function:
+        if player.items != []:
+            for i in player.items:
+                if player_input.lower() == f"drop {i.name}":
+                    player.dropItem(i)
+                    player.current_room.addItem(i)
         else:
-            print("\n There's nothing of interest in that direction.\n")
+            if "drop" in player_input:
+                print("You don't have any items...")
 
-    elif player_input == 's':
-        if player.current_room.s_to != []:
-            player.current_room = player.current_room.s_to
-            print(f"\nYou enter the {player.current_room.name}.\n{player.current_room.description}\n")
-        else:
-            print("\n There's nothing of interest in that direction.\n")
+        # Repeating Message:
+        player_input =  str(input("What will you do?: "))
 
-    elif player_input == 'd':
-        if player.current_room.e_to != []:
-            player.current_room = player.current_room.e_to
-            print(f"\nYou enter the {player.current_room.name}.\n{player.current_room.description}\n")
-        else:
-            print("\n There's nothing of interest in that direction.\n")
+        # Controls Function:
+        if player_input.lower() == 'c':
+            print("\nControls:\n'W' = Up\n'A' = Left\n'S' = Down\n'D' = Right\n'Q' = Quit.\n'R' = Check Current Room\n'I' = Check Inventory.\n'take (item name)' = Take the specified item.\n'drop (item name)' = Drop the specified item.\n")
+        
+        # Check Room Function:
+        elif player_input.lower() == 'r':
+            print(f"\n{player}\n")
 
+        # Check Inventory Function:
+        elif player_input.lower() == 'i':
+            if player.items != []:
+                print("\nInventory:")
+                for i in player.items:
+                    print(i)
+            else:
+                print("\n    Your bag is empty...\n")
 
+        # Direction Up Function:
+        elif player_input.lower() == 'w':
+            if player.current_room.n_to != []:
+                player.current_room = player.current_room.n_to
+                print(f"\nYou enter the {player.current_room.name}.\n{player.current_room.description}\n")
+                if player.current_room.items != []:
+                    for i in player.current_room.items:
+                        print(f"    You see a ({i.name}) on the ground.\n")
+            else:
+                print("\nThere's nothing of interest in that direction.\n")
+
+        # Direction Left Function:
+        elif player_input.lower() == 'a':
+            if player.current_room.w_to != []:
+                player.current_room = player.current_room.w_to
+                print(f"\nYou enter the {player.current_room.name}.\n{player.current_room.description}\n")
+                if player.current_room.items != []:
+                    for i in player.current_room.items:
+                        print(f"    You see a ({i.name}) on the ground.\n")
+            else:
+                print("\nThere's nothing of interest in that direction.\n")
+
+        # Direction Down Function:
+        elif player_input.lower() == 's':
+            if player.current_room.s_to != []:
+                player.current_room = player.current_room.s_to
+                print(f"\nYou enter the {player.current_room.name}.\n{player.current_room.description}\n")
+                if player.current_room.items != []:
+                    for i in player.current_room.items:
+                        print(f"    You see a ({i.name}) on the ground.\n")
+            else:
+                print("\nThere's nothing of interest in that direction.\n")
+
+        # Direction Right Function:
+        elif player_input == 'd':
+            if player.current_room.e_to != []:
+                player.current_room = player.current_room.e_to
+                print(f"\nYou enter the {player.current_room.name}.\n{player.current_room.description}\n")
+                if player.current_room.items != []:
+                    for i in player.current_room.items:
+                        print(f"    You see a ({i.name}) on the ground.\n")
+            else:
+                print("\nThere's nothing of interest in that direction.\n")
     
+    player_input =  str(input("\nTry again? y/n: "))
+    if player_input == "y":
+        print("Good Luck!")
+        game_running = True
+        player.current_room = room['outside']
+        player.items = []
+        room['outside'].addItem(item['survival_knife'])
+        room['foyer'].addItem(item['lighter'])
+        room['foyer'].addItem(item['note1'])
+        room['overlook'].addItem(item['note2'])
+        room['narrow'].addItem(item['note3'])
+        game_loop()
+    elif player_input == "n":
+        print("Goodbye!")
+        quit()
+
+game_loop()
 
 
